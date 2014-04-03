@@ -55,6 +55,31 @@
     return genFun;
   };
 
+  wrapGenerator.async = function(innerFn, self, tryList) {
+    return new Promise(function(resolve, reject) {
+      var generator = wrapGenerator(innerFn, self, tryList);
+      var callNext = step.bind(generator.next);
+      var callThrow = step.bind(generator.throw);
+
+      function step(arg) {
+        try {
+          var info = this(arg);
+          var value = info.value;
+        } catch (error) {
+          return reject(error);
+        }
+
+        if (info.done) {
+          resolve(value);
+        } else {
+          Promise.resolve(value).then(callNext, callThrow);
+        }
+      }
+
+      callNext();
+    });
+  };
+
   // Ensure isGeneratorFunction works when Function#name not supported.
   if (GeneratorFunction.name !== "GeneratorFunction") {
     GeneratorFunction.name = "GeneratorFunction";
