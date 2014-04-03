@@ -15,7 +15,7 @@ var transform = require("./lib/visit").transform;
 var utils = require("./lib/util");
 var recast = require("recast");
 var types = recast.types;
-var genFunExp = /\bfunction\s*\*/;
+var genOrAsyncFunExp = /\bfunction\s*\*|\basync\b/;
 var blockBindingExp = /\b(let|const)\s+/;
 
 function regenerator(source, options) {
@@ -25,8 +25,9 @@ function regenerator(source, options) {
     regenerator.runtime.dev, "utf-8"
   ) + "\n" : "";
 
-  if (!genFunExp.test(source)) {
-    return runtime + source; // Shortcut: no generators to transform.
+  if (!genOrAsyncFunExp.test(source)) {
+    // Shortcut: no generators or async functions to transform.
+    return runtime + source;
   }
 
   var recastOptions = getRecastOptions(options);
