@@ -91,6 +91,11 @@ enqueue(convert, [
   "./test/tests.es5.js"
 ]);
 
+enqueue(convert, [
+  "./test/async.es6.js",
+  "./test/async.es5.js"
+]);
+
 enqueue(makeMochaCopyFunction("mocha.js"));
 enqueue(makeMochaCopyFunction("mocha.css"));
 
@@ -101,7 +106,9 @@ if (!semver.eq(process.version, "0.11.7")) {
     require.resolve("browserify"); // Throws if missing.
     enqueue(bundle, [
       ["./runtime/dev.js",
-       "./test/tests.es5.js"],
+       "./runtime/promise.js",
+       "./test/tests.es5.js",
+       "./test/async.es5.js"],
       "./test/tests.browser.js"
     ]);
   } catch (ignored) {
@@ -112,7 +119,9 @@ if (!semver.eq(process.version, "0.11.7")) {
 enqueue("mocha", [
   "--reporter", "spec",
   "--require", "runtime/dev",
-  "./test/tests.es5.js"
+  "--require", "runtime/promise",
+  "./test/tests.es5.js",
+  "./test/async.es5.js"
 ]);
 
 flush();

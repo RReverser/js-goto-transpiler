@@ -32,7 +32,8 @@
     "esprima": "git://github.com/benjamn/esprima.git#async-await",
     "recast": "~0.5.17",
     "private": "~0.1.2",
-    "defs": "~0.6.2"
+    "defs": "~0.6.2",
+    "promise": "~4.0.0"
   },
   "devDependencies": {
     "mocha": "~1.13.0",
