@@ -34,4 +34,93 @@ describe("async functions and await expressions", function() {
       assert.strictEqual(typeof Promise, "function");
     });
   });
+
+  describe("no-await async function", function() {
+    it("should return a Promise", function(done) {
+      var called = false;
+
+      async function noAwait(value) {
+        called = true;
+        return value;
+      }
+
+      var promise = noAwait("asdf");
+      assert.strictEqual(called, true);
+
+      promise.then(function(value) {
+        assert.strictEqual(called, true);
+        assert.strictEqual(value, "asdf");
+        done();
+      }).catch(done);
+    });
+  });
+
+  describe("one-await async function", function() {
+    it("should finish asynchronously", function(done) {
+      var flag1 = false;
+      var flag2 = false;
+
+      async function oneAwait(value) {
+        flag1 = true;
+        var result = await value;
+        flag2 = true;
+        return result;
+      }
+
+      var promise = oneAwait("asdf");
+      assert.strictEqual(flag1, true);
+      assert.strictEqual(flag2, false);
+
+      promise.then(function(value) {
+        assert.strictEqual(flag2, true);
+        assert.strictEqual(value, "asdf");
+        done();
+      }).catch(done);
+    });
+  });
+
+  describe("nested async function calls", function() {
+    it("should evaluate in the right order", function(done) {
+      var markers = [];
+
+      async function innerMost(marker) {
+        markers.push(marker);
+        return await marker;
+      }
+
+      async function inner(marker) {
+        markers.push(marker);
+
+        assert.strictEqual(
+          await innerMost(marker + 1),
+          marker + 1
+        );
+
+        markers.push(marker + 2);
+
+        assert.strictEqual(
+          await innerMost(marker + 3),
+          marker + 3
+        );
+
+        markers.push(marker + 4);
+      }
+
+      async function outer() {
+        markers.push(0);
+        await inner(1);
+        markers.push(6);
+        await inner(7);
+        markers.push(12);
+      }
+
+      outer().then(function() {
+        var expected = [];
+        for (var i = 0; i <= 12; ++i)
+          expected.push(i);
+        assert.deepEqual(markers, expected);
+        done();
+      }).catch(done);
+    });
+  });
 });
