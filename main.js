@@ -16,7 +16,7 @@ var transform = require("./lib/visit").transform;
 var utils = require("./lib/util");
 var recast = require("recast");
 var types = recast.types;
-var genOrAsyncFunExp = /\bfunction\s*\*|\basync\b/;
+var genOrAsyncOrGotoFunExp = /\bfunction\s*\*|\basync\b|\bgoto\s*:/;
 var blockBindingExp = /\b(let|const)\s+/;
 
 function exports(file, options) {
@@ -48,7 +48,7 @@ runtime.path = path.join(__dirname, "runtime.js");
 function compile(source, options) {
   options = normalizeOptions(options);
 
-  if (!genOrAsyncFunExp.test(source)) {
+  if (!genOrAsyncOrGotoFunExp.test(source)) {
     return {
       // Shortcut: no generators or async functions to transform.
       code: (options.includeRuntime === true ? fs.readFileSync(

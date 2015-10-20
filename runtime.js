@@ -223,6 +223,14 @@
         });
   };
 
+  // Synchronous wrapper simply executes iterator once
+  // and returns result.
+  // This is currently used for functions with gotos.
+
+  runtime.sync = function(innerFn, outerFn, self, tryLocsList) {
+    return wrap.apply(this, arguments).next().value;
+  };
+
   function makeInvokeMethod(innerFn, self, context) {
     var state = GenStateSuspendedStart;
 
