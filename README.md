@@ -1,74 +1,45 @@
-regenerator [![Build Status](https://travis-ci.org/facebook/regenerator.png?branch=master)](https://travis-ci.org/facebook/regenerator)
-===
+regenerator
+===========
 
-This package implements a fully-functional source transformation that
-takes the proposed syntax for generators/`yield` from future versions of
-JS ([ECMAScript6 or ES6](http://wiki.ecmascript.org/doku.php?id=harmony:specification_drafts), experimentally implemented in Node.js v0.11) and
-spits out efficient JS-of-today (ES5) that behaves the same way.
+This is a fork of [Facebook's regenerator](https://github.com/facebook/regenerator) which, in addition to original features, adds support for `goto` direct jumps inside of a function to JavaScript.
 
-A small runtime library (less than 1KB compressed) is required to provide the
-`wrapGenerator` function. You can install it either as a CommonJS module
-or as a standalone .js file, whichever you prefer.
+Example
+-------
 
-Installation
----
+Sample code:
 
-From NPM:
-```sh
-npm install -g regenerator
+```javascript
+function f() {
+    goto: x;
+    console.log("do not enter");
+    z:
+    console.log(3);
+    return 4;
+    y:
+    console.log(2);
+    goto: z;
+    x:
+    console.log(1);
+    goto: y;
+}
+
+console.log("Let's do some evil!");
+console.log('Result:', f());
 ```
 
-From GitHub:
-```sh
-cd path/to/node_modules
-git clone git://github.com/facebook/regenerator.git
-cd regenerator
-npm install .
-npm test
+Console output:
+
+```
+Let's do some evil!
+1
+2
+3
+Result: 4
 ```
 
-Usage
----
+Documentation
+-------------
 
-You have several options for using this module.
+Read more about regenerator configuration and usage: https://github.com/facebook/regenerator
 
-Simplest usage:
-```sh
-regenerator es6.js > es5.js # Just the transform.
-regenerator --include-runtime es6.js > es5.js # Add the runtime too.
-regenerator src lib # Transform every .js file in src and output to lib.
-```
-
-Programmatic usage:
-```js
-var es5Source = require("regenerator").compile(es6Source).code;
-var es5SourceWithRuntime = require("regenerator").compile(es6Source, {
-  includeRuntime: true
-}).code;
-```
-
-AST transformation:
-```js
-var recast = require("recast");
-var ast = recast.parse(es6Source);
-ast = require("regenerator").transform(ast);
-var es5Source = recast.print(ast);
-```
-
-How can you get involved?
----
-
-The easiest way to get involved is to look for buggy examples using [the
-sandbox](http://facebook.github.io/regenerator/), and when you find
-something strange just click the "report a bug" link (the new issue form
-will be populated automatically with the problematic code).
-
-Alternatively, you can
-[fork](https://github.com/facebook/regenerator/fork) the repository,
-create some failing tests cases in [test/tests.es6.js](test/tests.es6.js),
-and send pull requests for me to fix.
-
-If you're feeling especially brave, you are more than welcome to dive into
-the transformer code and fix the bug(s) yourself, but I must warn you that
-the code could really benefit from [better implementation
-comments](https://github.com/facebook/regenerator/issues/7).
+Read more on why I could ever want to create such an evil thing: https://rreverser.com/gotos-in-javascript-now-its-real/
