@@ -101,6 +101,11 @@ enqueue(convert, [
   "./test/async.es5.js"
 ]);
 
+enqueue(convert, [
+  "./test/goto.es6.js",
+  "./test/goto.es5.js"
+]);
+
 enqueue(makeMochaCopyFunction("mocha.js"));
 enqueue(makeMochaCopyFunction("mocha.css"));
 
@@ -112,7 +117,8 @@ if (!semver.eq(process.version, "0.11.7")) {
     enqueue(bundle, [
       ["./runtime.js",
        "./test/tests.es5.js",
-       "./test/async.es5.js"],
+       "./test/async.es5.js",
+       "./test/goto.es5.js"],
       "./test/tests.browser.js"
     ]);
   } catch (ignored) {
@@ -125,6 +131,7 @@ enqueue("mocha", [
   "--require", "./runtime",
   "./test/tests.es5.js",
   "./test/async.es5.js",
+  "./test/goto.es5.js",
   "./test/tests.transform.js"
 ]);
 
